@@ -1,0 +1,1 @@
+listOfWords = ["cyprianek", "naserka", "magietka", "ziolo", "kropka", "dzieciatko", "puszek"]
