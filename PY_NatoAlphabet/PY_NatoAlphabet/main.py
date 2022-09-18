@@ -7,9 +7,11 @@ nato_dict = {row["letter"]:row["code"] for (index, row) in nato_alphabet_data.it
 
 while True:
     try:
-        word = input("Please enter a word to code: ").upper().replace(" ", "")
-        coded_word = [nato_dict[letter] for letter in word]
-        print(coded_word)
+        message = input("Please enter a message to code: ").upper().split()
+        for word in message:
+            str_word = str(word)
+            coded_word = [nato_dict[char] for char in str_word]
+            print("Message:", word, "-read as-", coded_word, sep = "   ")
     except KeyError:
-        pass
+        print("Only numbers and letter are allowed.")
     
