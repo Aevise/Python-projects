@@ -3,8 +3,9 @@ from random import randint
 from tkinter import messagebox
 import os
 
-DATA_PATH = "./data/dictionary.csv"
-WORDS_TO_LEARN = "./data/words_to_learn.csv"
+DIRECTORY_FROM_ROOT = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = DIRECTORY_FROM_ROOT + "\\data\\dictionary.csv"
+WORDS_TO_LEARN = DIRECTORY_FROM_ROOT + "\\data\\words_to_learn.csv"
 
 # ---------------------- data extract ------------------------
 class Word_Dictionary():
@@ -13,9 +14,18 @@ class Word_Dictionary():
     def __init__(self) -> None:
         """word_dictionary is a list of dictionaries
         """
+        self.words_in_dictionary = 0
+        self.word_dictionary = {}
+        self.languages = []
         self.word_id = 0
         self.continue_to_learn = True
         self.continue_learning()
+        
+
+    def words_left(self)->int:
+        """Returns number of the words left in a dictionary
+        """
+        return (len(self.word_dictionary) - 1)
 
     def choose_element(self)->int:
         """Returns:
@@ -59,7 +69,7 @@ class Word_Dictionary():
     def refresh_data(self)->None:
         """Refresh data regarding list of dictionaries
         """
-        self.words_in_dictionary = len(self.word_dictionary) - 1
+        self.words_in_dictionary = self.words_left()
 
     def is_not_empty(self)->None:
         """Check if there is any word left in a list of dictionaries
@@ -93,11 +103,22 @@ class Word_Dictionary():
                 word_dictionary_dataframe = pandas.read_csv(WORDS_TO_LEARN)
             except FileNotFoundError:
                 word_dictionary_dataframe = pandas.read_csv(DATA_PATH)
+            except pandas.errors.EmptyDataError:
+                messagebox.showinfo(title = "Nice Work!", message = "You have learned all the available words before! Starting from the beginning!")
+                word_dictionary_dataframe = pandas.read_csv(DATA_PATH)
         else:
-            os.remove(WORDS_TO_LEARN)
-            word_dictionary_dataframe = pandas.read_csv(DATA_PATH)
+            try:
+                os.remove(WORDS_TO_LEARN)
+            except FileNotFoundError:
+                pass
+            finally:
+                word_dictionary_dataframe = pandas.read_csv(DATA_PATH)
 
         self.word_dictionary = word_dictionary_dataframe.to_dict(orient = "records") 
-        self.words_in_dictionary = len(self.word_dictionary) - 1
         self.languages = self.get_languages()
+        self.words_in_dictionary = self.words_left()
+
+    def restart(self)->None:
+        self.continue_to_learn = False
+        self.create_dictionary()
 
