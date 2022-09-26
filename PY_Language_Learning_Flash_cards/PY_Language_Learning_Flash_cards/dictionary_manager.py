@@ -88,11 +88,16 @@ class Word_Dictionary():
     def continue_learning(self)->None:
         """Pops up a message where you can decide if you want to continue your learning or start anew
         """
-        decision = messagebox.askyesno(title = "Continue Learning?", message = "Do you want to continue your learning?")
-        if(decision):
-            self.continue_to_learn = True
-        else:
+        try:
+            word_dictionary_dataframe = pandas.read_csv(WORDS_TO_LEARN)
+        except FileNotFoundError:
             self.continue_to_learn = False
+        else:
+            decision = messagebox.askyesno(title = "Continue Learning?", message = "Do you want to continue your learning?")
+            if(decision):
+                self.continue_to_learn = True
+            else:
+                self.continue_to_learn = False
         self.create_dictionary()
 
     def create_dictionary(self)->None:

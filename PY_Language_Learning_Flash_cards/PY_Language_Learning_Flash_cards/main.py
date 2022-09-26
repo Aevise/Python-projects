@@ -13,6 +13,7 @@ RESTANTE_FONT = ("Arial", 14, "italic")
 FRONT_FONT_COLOR = "black"
 BACK_FONT_COLOR = "white"
 DIRECTORY_FROM_ROOT = os.path.dirname(os.path.abspath(__file__))
+CARD_FLIP_PICTURE = DIRECTORY_FROM_ROOT + "\\images\\card_flip.png"
 CARD_BACK = DIRECTORY_FROM_ROOT + "\\images\\card_back.png"
 CARD_FRONT = DIRECTORY_FROM_ROOT + "\\images\\card_front.png"
 CORRECT_ANSWER_IMAGE = DIRECTORY_FROM_ROOT + "\\images\\right.png"
@@ -57,14 +58,28 @@ def new_word()->None:
 def flip_card()->None:
     """Flips a card to it's back side
     """
-    global WORD, LANGUAGES
-    card.itemconfig(front_side_language, text = "")
-    card.itemconfig(front_side_language_word, text = "")
-    card.itemconfig(back_side_language, text = LANGUAGES[1], fill = BACK_FONT_COLOR)
-    card.itemconfig(back_side_word, text = WORD[LANGUAGES[1]], fill = BACK_FONT_COLOR)    
-    card.itemconfig(back_side_language_pl, text = LANGUAGES[2], fill = BACK_FONT_COLOR)
-    card.itemconfig(back_side_word_pl, text = WORD[LANGUAGES[2]], fill = BACK_FONT_COLOR)
-    card.itemconfig(card_side, image = back_card_image)
+    global WORD, LANGUAGES, FLIP_TIMER, COUNTDOWN, TIME_TO_FLIP
+    
+    if card.itemcget(front_side_language, "text") == LANGUAGES[0]:
+        card.itemconfig(front_side_language, text = "")
+        card.itemconfig(front_side_language_word, text = "")
+        card.itemconfig(back_side_language, text = LANGUAGES[1], fill = BACK_FONT_COLOR)
+        card.itemconfig(back_side_word, text = WORD[LANGUAGES[1]], fill = BACK_FONT_COLOR)    
+        card.itemconfig(back_side_language_pl, text = LANGUAGES[2], fill = BACK_FONT_COLOR)
+        card.itemconfig(back_side_word_pl, text = WORD[LANGUAGES[2]], fill = BACK_FONT_COLOR)
+        card.itemconfig(card_side, image = back_card_image)
+        TIME_TO_FLIP = 0
+        timer_label.config(text = TIME_TO_FLIP)
+        screen.after_cancel(FLIP_TIMER)
+        screen.after_cancel(COUNTDOWN)
+    else:
+        card.itemconfig(back_side_language, text = "")
+        card.itemconfig(back_side_word, text = "")    
+        card.itemconfig(back_side_language_pl, text = "")
+        card.itemconfig(back_side_word_pl, text = "")
+        card.itemconfig(front_side_language, text = LANGUAGES[0], fill = FRONT_FONT_COLOR)
+        card.itemconfig(front_side_language_word, text = WORD[LANGUAGES[0]], fill = FRONT_FONT_COLOR)
+        card.itemconfig(card_side, image = front_card_image)
 
 def word_learned()->None:
     """Removes the word from the dictionary and picks a new word
@@ -132,8 +147,11 @@ wrong_button.grid(row = 1, column = 0, pady = 25)
 
 refresh_image = PhotoImage(file = REFRESH_IMAGE)
 restart_button = Button(image = refresh_image, highlightthickness = 0, bg = BACKGROUND_COLOR, command = restart, pady = 50)
-restart_button.grid(row = 2, column = 1)
+restart_button.grid(row = 2, column = 0)
 
+flip_image = PhotoImage(file = CARD_FLIP_PICTURE)
+flip_button = Button(image = flip_image, command = flip_card, highlightthickness = 0, bg = BACKGROUND_COLOR)
+flip_button.grid(row = 2, column = 1)
 
 # --------------------- Label -------------------------------------
 timer_label = Label(text = TIME_TO_FLIP, font = LANGUAGE_FONT, bg = BACKGROUND_COLOR, highlightthickness = 0)
